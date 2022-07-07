@@ -1,30 +1,63 @@
 package database
 
+// import (
+// 	"database/sql"
+// 	"fmt"
+// )
+
+// // Database instance
+// var DB *sql.DB
+
+// // Connect function
+// func Connect() error {
+// 	var err error
+// 	DB, err = sql.Open("postgres", "host=localhost port=5432 user=mahesh dbname=workspace_booking sslmode=disable")
+
+// 	if err != nil {
+// 		return err
+// 	}
+
+// 	err = DB.Ping()
+
+// 	if err != nil {
+// 		return err
+// 	}
+
+// 	CreateRoleTable()
+
+// 	fmt.Println("Connection Opened to Database")
+// 	return nil
+// }
+
 import (
-	"database/sql"
-	"fmt"
+	"context"
+	"workspace_booking/config"
+
+	"github.com/jackc/pgx/v4/pgxpool"
 )
 
-// Database instance
-var DB *sql.DB
+var dbPool *pgxpool.Pool
 
-// Connect function
-func Connect() error {
-	var err error
-	DB, err = sql.Open("postgres", "host=localhost port=5432 user=mahesh dbname=workspace_booking sslmode=disable")
-
-	if err != nil {
-		return err
+func GetDbConnectionPool() *pgxpool.Pool {
+	if dbPool != nil {
+		return dbPool
 	}
 
-	err = DB.Ping()
+	psqlconn := config.GetDBConnectionURL()
+	println(psqlconn)
+	db, err := pgxpool.Connect(context.Background(), psqlconn)
 
-	if err != nil {
-		return err
-	}
+	// open database
+	checkError(err)
+	dbPool = db
 
 	CreateRoleTable()
 
-	fmt.Println("Connection Opened to Database")
-	return nil
+	return dbPool
+}
+
+func checkError(err error) {
+	if err != nil {
+		panic(err)
+	}
 }

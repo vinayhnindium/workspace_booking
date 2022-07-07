@@ -10,7 +10,7 @@ func SetupRoutes(app *fiber.App) {
 
 	api := app.Group("/api")
 
-	api.Get("/roles", controller.GetAllRoles)
+	api.Get("/roles", controller.AllRoles)
 	api.Post("/roles", controller.CreateRole)
 
 }

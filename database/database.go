@@ -12,7 +12,7 @@ var DB *sql.DB
 func Connect() error {
 	var err error
 	DB, err = sql.Open("postgres", "host=localhost port=5432 user=mahesh dbname=workspace_booking sslmode=disable")
-	fmt.Println("DB******", DB)
+
 	if err != nil {
 		return err
 	}
@@ -24,7 +24,7 @@ func Connect() error {
 	}
 
 	CreateRoleTable()
-	// CreateTables()
+
 	fmt.Println("Connection Opened to Database")
 	return nil
 }

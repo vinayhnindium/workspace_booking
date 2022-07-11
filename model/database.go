@@ -1,46 +1,18 @@
 package model
 
-// import (
-// 	"database/sql"
-// 	"fmt"
-// )
-
-// // Database instance
-// var DB *sql.DB
-
-// // Connect function
-// func Connect() error {
-// 	var err error
-// 	DB, err = sql.Open("postgres", "host=localhost port=5432 user=mahesh dbname=workspace_booking sslmode=disable")
-
-// 	if err != nil {
-// 		return err
-// 	}
-
-// 	err = DB.Ping()
-
-// 	if err != nil {
-// 		return err
-// 	}
-
-// 	CreateRoleTable()
-
-// 	fmt.Println("Connection Opened to Database")
-// 	return nil
-// }
-
 import (
 	"context"
 	"workspace_booking/config"
+	"workspace_booking/migration"
 
 	"github.com/jackc/pgx/v4/pgxpool"
 )
 
-var dbPool *pgxpool.Pool
+var DbPool *pgxpool.Pool
 
 func GetDbConnectionPool() *pgxpool.Pool {
-	if dbPool != nil {
-		return dbPool
+	if DbPool != nil {
+		return DbPool
 	}
 
 	psqlconn := config.GetDBConnectionURL()
@@ -49,11 +21,11 @@ func GetDbConnectionPool() *pgxpool.Pool {
 
 	// open database
 	checkError(err)
-	dbPool = db
+	DbPool = db
 
-	CreateRoleTable()
+	migration.CreateRoleTable()
 
-	return dbPool
+	return DbPool
 }
 
 func checkError(err error) {

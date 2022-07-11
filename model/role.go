@@ -22,7 +22,7 @@ type Roles struct {
 func GetAllRoles() []Role {
 	fmt.Println("Fetching")
 
-	rows, err := dbPool.Query(context.Background(), "SELECT * FROM roles")
+	rows, err := DbPool.Query(context.Background(), "SELECT * FROM roles")
 	if err != nil {
 		return nil
 	}
@@ -48,7 +48,7 @@ func (r *Role) CreateRole(name string) error {
 
 	dt := time.Now()
 	query := "INSERT INTO roles (name, created_at, updated_at) VALUES ($1, $2, $3) RETURNING id, created_at, updated_at"
-	d := dbPool.QueryRow(context.Background(), query, name, dt, dt)
+	d := DbPool.QueryRow(context.Background(), query, name, dt, dt)
 	d.Scan(&r.Id, &r.CreatedAt, &r.UpdatedAt)
 
 	return nil

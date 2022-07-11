@@ -3,16 +3,16 @@ package controller
 import (
 	"log"
 
-	database "workspace_booking/model"
+	"workspace_booking/model"
 
 	"github.com/gofiber/fiber/v2"
 )
 
 // AllRoles from db
 func AllRoles(c *fiber.Ctx) error {
-	// query role table in the database
+	// query role table in the model
 
-	roles := database.GetAllRoles()
+	roles := model.GetAllRoles()
 
 	if err := c.JSON(&fiber.Map{
 		"success": true,
@@ -31,7 +31,7 @@ func AllRoles(c *fiber.Ctx) error {
 // CreateRole handler
 func CreateRole(c *fiber.Ctx) error {
 	// Instantiate new Role struct
-	r := new(database.Role)
+	r := new(model.Role)
 
 	//  Parse body into role struct
 	if err := c.BodyParser(r); err != nil {

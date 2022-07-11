@@ -1,11 +1,9 @@
-package model
+package migration
 
 import (
 	"context"
-	"workspace_booking/config"
-	"workspace_booking/migration"
-
 	"github.com/jackc/pgx/v4/pgxpool"
+	"workspace_booking/config"
 )
 
 var DbPool *pgxpool.Pool
@@ -23,7 +21,7 @@ func GetDbConnectionPool() *pgxpool.Pool {
 	checkError(err)
 	DbPool = db
 
-	migration.CreateRoleTable()
+	CreateRoleTable()
 
 	return DbPool
 }

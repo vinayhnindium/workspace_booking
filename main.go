@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"log"
 	"workspace_booking/config"
-	db "workspace_booking/model"
+	db "workspace_booking/migration"
 	"workspace_booking/router"
 
 	"github.com/gofiber/fiber/v2"

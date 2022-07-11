@@ -1,4 +1,4 @@
-package database
+package model
 
 import (
 	"context"
@@ -44,17 +44,16 @@ func GetAllRoles() []Role {
 	return roles
 }
 
-func CreateRole(name string) (Role, error) {
+func (r *Role) CreateRole(name string) error {
 
-	row, err := dbPool.Query(context.Background(), "INSERT INTO roles (name) VALUES ($1)", name)
-	if err != nil {
-		fmt.Println("Failed", err)
-		return Role{}, err
-	}
-	fmt.Println("************", &row)
-	r := Role{}
-	row.Scan(&r.Id, &r.Name)
+	dt := time.Now()
+	query := "INSERT INTO roles (name, created_at, updated_at) VALUES ($1, $2, $3) RETURNING id, created_at, updated_at"
+	d := dbPool.QueryRow(context.Background(), query, name, dt, dt)
+	d.Scan(&r.Id, &r.CreatedAt, &r.UpdatedAt)
 
-	return r, nil
+	return nil
 
 }
+
+// db.QueryRow("INSERT INTO users (name, email, encrypted_password, created_at, updated_at) VALUES ($1, $2, $3, $4, $5) RETURNING id, created_at, updated_at",
+// u.Name, u.Email, u.Password, dt, dt).Scan(&u.ID, &u.CreatedAt, &u.UpdatedAt)

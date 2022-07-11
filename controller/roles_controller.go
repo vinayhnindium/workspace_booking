@@ -3,7 +3,7 @@ package controller
 import (
 	"log"
 
-	"workspace_booking/database"
+	database "workspace_booking/model"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -41,7 +41,7 @@ func CreateRole(c *fiber.Ctx) error {
 			"message": err,
 		})
 	}
-	role, err := database.CreateRole(r.Name)
+	err := r.CreateRole(r.Name)
 
 	if err != nil {
 		log.Println(err)
@@ -52,11 +52,12 @@ func CreateRole(c *fiber.Ctx) error {
 	}
 
 	// Print result
-	log.Println(role)
+	log.Println(r)
 
 	// Return Role in JSON format
 	if err := c.JSON(&fiber.Map{
 		"success": true,
+		"role":    r,
 		"message": "Role successfully created",
 	}); err != nil {
 		return c.Status(500).JSON(&fiber.Map{

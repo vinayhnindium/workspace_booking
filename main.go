@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"log"
 	"workspace_booking/config"
-	db "workspace_booking/database"
+	db "workspace_booking/model"
 	"workspace_booking/router"
 
 	"github.com/gofiber/fiber/v2"
@@ -26,13 +26,6 @@ func main() {
 	app := fiber.New()
 	app.Use(logger.New())
 	router.SetupRoutes(app)
-
-	// app.Get("/", func(c *fiber.Ctx) error {
-	// 	u := db.User{}
-	// 	users := u.GetUsers()
-	// 	fmt.Println(users)
-	// 	return c.JSON(users)
-	// })
 
 	println(config.GetServerPort())
 	log.Fatalln(app.Listen(config.GetServerPort()))

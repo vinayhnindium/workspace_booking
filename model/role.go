@@ -20,6 +20,7 @@ type Roles struct {
 	Roles []Role `json:"roles"`
 }
 
+// GetAllRoles will fetch all the roles from roles table
 func GetAllRoles() []Role {
 	fmt.Println("Fetching")
 
@@ -45,16 +46,17 @@ func GetAllRoles() []Role {
 	return roles
 }
 
-func (r *Role) CreateRole(name string) error {
+// InsertRole will create the role record in db
+func (r *Role) InsertRole() error {
 
 	dt := time.Now()
 	query := "INSERT INTO roles (name, created_at, updated_at) VALUES ($1, $2, $3) RETURNING id, created_at, updated_at"
-	d := migration.DbPool.QueryRow(context.Background(), query, name, dt, dt)
-	d.Scan(&r.Id, &r.CreatedAt, &r.UpdatedAt)
+	d := migration.DbPool.QueryRow(context.Background(), query, r.Name, dt, dt)
+	err := d.Scan(&r.Id, &r.CreatedAt, &r.UpdatedAt)
+	if err != nil {
+		return err
+	}
 
 	return nil
 
 }
-
-// db.QueryRow("INSERT INTO users (name, email, encrypted_password, created_at, updated_at) VALUES ($1, $2, $3, $4, $5) RETURNING id, created_at, updated_at",
-// u.Name, u.Email, u.Password, dt, dt).Scan(&u.ID, &u.CreatedAt, &u.UpdatedAt)

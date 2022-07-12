@@ -21,7 +21,9 @@ func GetDbConnectionPool() *pgxpool.Pool {
 	checkError(err)
 	DbPool = db
 
+	// Dont change the order here
 	CreateRoleTable()
+	CreateBookingsTable()
 
 	return DbPool
 }

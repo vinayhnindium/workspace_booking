@@ -2,6 +2,7 @@ package controller
 
 import (
 	"log"
+	"workspace_booking/utility"
 
 	"workspace_booking/model"
 
@@ -20,10 +21,7 @@ func AllRoles(c *fiber.Ctx) error {
 		"message": "All role returned successfully",
 	}); err != nil {
 		log.Println(3, err)
-		return c.Status(500).JSON(&fiber.Map{
-			"success": false,
-			"message": err,
-		})
+		return utility.ErrResponse(c, "Error in getting roles", 500)
 	}
 	return nil
 }
@@ -36,19 +34,13 @@ func CreateRole(c *fiber.Ctx) error {
 	//  Parse body into role struct
 	if err := c.BodyParser(r); err != nil {
 		log.Println(err)
-		return c.Status(400).JSON(&fiber.Map{
-			"success": false,
-			"message": err,
-		})
+		return utility.ErrResponse(c, "Error in parsing", 400)
 	}
-	err := r.CreateRole(r.Name)
+	err := r.InsertRole()
 
 	if err != nil {
 		log.Println(err)
-		return c.Status(500).JSON(&fiber.Map{
-			"success": false,
-			"message": err,
-		})
+		return utility.ErrResponse(c, "Error in saving", 500)
 	}
 
 	// Print result
@@ -60,10 +52,7 @@ func CreateRole(c *fiber.Ctx) error {
 		"role":    r,
 		"message": "Role successfully created",
 	}); err != nil {
-		return c.Status(500).JSON(&fiber.Map{
-			"success": false,
-			"message": "Error creating role",
-		})
+		return utility.ErrResponse(c, "Error in sending response", 500)
 	}
 	return nil
 }

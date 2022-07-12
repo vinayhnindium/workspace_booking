@@ -20,8 +20,7 @@ func AllRoles(c *fiber.Ctx) error {
 		"role":    roles,
 		"message": "All role returned successfully",
 	}); err != nil {
-		log.Println(3, err)
-		return utility.ErrResponse(c, "Error in getting roles", 500)
+		return utility.ErrResponse(c, "Error in getting roles", 500, err)
 	}
 	return nil
 }
@@ -33,14 +32,12 @@ func CreateRole(c *fiber.Ctx) error {
 
 	//  Parse body into role struct
 	if err := c.BodyParser(r); err != nil {
-		log.Println(err)
-		return utility.ErrResponse(c, "Error in parsing", 400)
+		return utility.ErrResponse(c, "Error in parsing", 400, err)
 	}
 	err := r.InsertRole()
 
 	if err != nil {
-		log.Println(err)
-		return utility.ErrResponse(c, "Error in saving", 500)
+		return utility.ErrResponse(c, "Error in saving", 500, err)
 	}
 
 	// Print result
@@ -52,7 +49,7 @@ func CreateRole(c *fiber.Ctx) error {
 		"role":    r,
 		"message": "Role successfully created",
 	}); err != nil {
-		return utility.ErrResponse(c, "Error in sending response", 500)
+		return utility.ErrResponse(c, "Error in sending response", 500, err)
 	}
 	return nil
 }

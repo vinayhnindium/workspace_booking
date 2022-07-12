@@ -14,4 +14,9 @@ func SetupRoutes(app *fiber.App) {
 	api.Post("/roles", controller.CreateRole)
 
 	api.Post("/book_workspace", controller.CreateBooking)
+
+	api.Get("/users", controller.GetUsers)
+	api.Post("/users", controller.CreateUser)
+	api.Get("/users/:id", controller.GetUser)
+	api.Delete("/users/:id", controller.DeleteUser)
 }

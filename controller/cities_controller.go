@@ -8,13 +8,13 @@ import (
 )
 
 // Index
-func AllBuildings(c *fiber.Ctx) error {
-	buildings := model.GetAllBuildings()
-	if len(buildings) != 0 {
+func AllCities(c *fiber.Ctx) error {
+	cities := model.GetAllCities()
+	if len(cities) != 0 {
 		if err := c.JSON(&fiber.Map{
-			"success":   true,
-			"buildings": buildings,
-			"message":   "All Buildings returned successfully",
+			"success": true,
+			"cities":  cities,
+			"message": "All Cities returned successfully",
 		}); err != nil {
 			log.Println(3, err)
 			return c.Status(500).JSON(&fiber.Map{
@@ -25,23 +25,23 @@ func AllBuildings(c *fiber.Ctx) error {
 	} else {
 		return c.Status(200).JSON(&fiber.Map{
 			"success": true,
-			"message": "No Records found for Building",
+			"message": "No Records found for City",
 		})
 	}
 	return nil
 }
 
-// CreateBuilding handler
-func CreateBuilding(c *fiber.Ctx) error {
-	building := new(model.Building)
-	if err := c.BodyParser(building); err != nil {
+// CreateCity handler
+func CreateCity(c *fiber.Ctx) error {
+	city := new(model.City)
+	if err := c.BodyParser(city); err != nil {
 		log.Println(err)
 		return c.Status(400).JSON(&fiber.Map{
 			"success": false,
 			"message": err,
 		})
 	}
-	err := building.CreateBuilding()
+	err := city.CreateCity()
 	if err != nil {
 		log.Println(err)
 		return c.Status(500).JSON(&fiber.Map{
@@ -50,15 +50,15 @@ func CreateBuilding(c *fiber.Ctx) error {
 		})
 	}
 
-	// Return Building in JSON format
+	// Return city in JSON format
 	if err := c.JSON(&fiber.Map{
-		"success":  true,
-		"building": building,
-		"message":  "Building successfully created",
+		"success": true,
+		"city":    city,
+		"message": "City successfully created",
 	}); err != nil {
 		return c.Status(500).JSON(&fiber.Map{
 			"success": false,
-			"message": "Error creating Building",
+			"message": "Error creating City",
 		})
 	}
 	return nil

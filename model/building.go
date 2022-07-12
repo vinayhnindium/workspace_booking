@@ -9,13 +9,13 @@ import (
 
 // Building struct
 type Building struct {
-	Id        int16     `json:"id"`
-	Name      string    `json:"name"`
-	City      string    `json:"city"`
-	Area      string    `json:"area"`
-	Address   string    `json:"address"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
+	Id           int64     `json:"id"`
+	Name         string    `json:"name"`
+	LocationId   int64     `json:"location_id"`
+	LocationName string    `json:"location_name"`
+	Address      string    `json:"address"`
+	CreatedAt    time.Time `json:"created_at"`
+	UpdatedAt    time.Time `json:"updated_at"`
 }
 
 // Buildings struct
@@ -36,20 +36,35 @@ func GetAllBuildings() []Building {
 	// iterate over rows
 	for rows.Next() {
 		building := Building{}
-		e = rows.Scan(&building.Id, &building.Name, &building.City, &building.Area, &building.Address, &building.CreatedAt, &building.UpdatedAt)
+		e = rows.Scan(&building.Id, &building.Name, &building.LocationId, &building.Address, &building.CreatedAt, &building.UpdatedAt)
+		location := migration.DbPool.QueryRow(context.Background(), "select name from location where id = $1", &building.Id)
+		location.Scan(&building.LocationName)
 		if e != nil {
 			fmt.Println("Failed to get buildings record :", e)
 			return []Building{}
 		}
-		buildings = append(buildings, Building{Id: building.Id, Name: building.Name, City: building.City, Area: building.Area, Address: building.Address, CreatedAt: building.CreatedAt, UpdatedAt: building.UpdatedAt})
+		buildings = append(buildings, building)
 	}
 	return buildings
 }
 
 func (building *Building) CreateBuilding() error {
 	dt := time.Now()
-	query := "INSERT INTO buildings (name, city, area, address, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id, created_at, updated_at"
-	d := migration.DbPool.QueryRow(context.Background(), query, &building.Name, &building.City, &building.Area, &building.Address, dt, dt)
+	query := "INSERT INTO buildings (name, location_id, address, created_at, updated_at) VALUES ($1, $2, $3, $4, $5) RETURNING id, created_at, updated_at"
+	d := migration.DbPool.QueryRow(context.Background(), query, &building.Name, &building.LocationId, &building.Address, dt, dt)
 	d.Scan(&building.Id, &building.CreatedAt, &building.UpdatedAt)
+	location := migration.DbPool.QueryRow(context.Background(), "select name from locations where id = $1", &building.LocationId)
+	location.Scan(&building.LocationName)
 	return nil
+}
+
+func GetBuildingByID(buildingId int) Building {
+	building := Building{}
+	rows := migration.DbPool.QueryRow(context.Background(), "select buildings.id, buildings.name, buildings.location_id, locations.name as location_name, buildings.address, buildings.created_at, buildings.updated_at from buildings LEFT JOIN locations on buildings.location_id = locations.id where buildings.id = $1", buildingId)
+	err := rows.Scan(&building.Id, &building.Name, &building.LocationId, &building.LocationName, &building.Address, &building.CreatedAt, &building.UpdatedAt)
+	if err != nil {
+		fmt.Println("Failed to get locations record :", err)
+		return Building{}
+	}
+	return building
 }

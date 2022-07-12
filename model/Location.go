@@ -9,9 +9,9 @@ import (
 
 // Building struct
 type Location struct {
-	Id        int16     `json:"id"`
+	Id        int64     `json:"id"`
 	Name      string    `json:"name"`
-	CityId    int16     `json:"city_id"`
+	CityId    int64     `json:"city_id"`
 	CityName  string    `json:"city_name"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`

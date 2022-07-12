@@ -9,7 +9,7 @@ import (
 
 // Building struct
 type City struct {
-	Id        int16     `json:"id"`
+	Id        int64     `json:"id"`
 	Name      string    `json:"name"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
@@ -34,7 +34,7 @@ func GetAllCities() []City {
 			fmt.Println("Failed to get buildings record :", e)
 			return []City{}
 		}
-		cities = append(cities, City{Id: city.Id, Name: city.Name, CreatedAt: city.CreatedAt, UpdatedAt: city.UpdatedAt})
+		cities = append(cities, city)
 	}
 	return cities
 }
@@ -45,4 +45,15 @@ func (city *City) CreateCity() error {
 	d := migration.DbPool.QueryRow(context.Background(), query, &city.Name, dt, dt)
 	d.Scan(&city.Id, &city.CreatedAt, &city.UpdatedAt)
 	return nil
+}
+
+func GetCityByID(cityId int) City {
+	city := City{}
+	rows := migration.DbPool.QueryRow(context.Background(), "select * from cities where id = $1", cityId)
+	err := rows.Scan(&city.Id, &city.Name, &city.CreatedAt, &city.UpdatedAt)
+	if err != nil {
+		fmt.Println("Failed to get locations record :", err)
+		return City{}
+	}
+	return city
 }

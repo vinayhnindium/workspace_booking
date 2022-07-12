@@ -10,8 +10,7 @@ func CreateBuildingTable() {
 	r, err := DbPool.Exec(context.Background(), `CREATE TABLE IF NOT EXISTS buildings (
         id serial PRIMARY KEY,
         name VARCHAR ( 50 ) NOT NULL,
-        city VARCHAR ( 50 ) NOT NULL,
-        area VARCHAR ( 50 ) NOT NULL,
+        location_id INTEGER REFERENCES locations (id),
         address VARCHAR ( 50 ) NOT NULL,
         created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP)

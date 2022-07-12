@@ -1,53 +1,37 @@
 package controller
 
 import (
-	"log"
 	"workspace_booking/model"
+	"workspace_booking/utility"
 
 	"github.com/gofiber/fiber/v2"
 )
 
-// Index
+// AllBuildings
 func AllBuildings(c *fiber.Ctx) error {
+
 	buildings := model.GetAllBuildings()
-	if len(buildings) != 0 {
-		if err := c.JSON(&fiber.Map{
-			"success":   true,
-			"buildings": buildings,
-			"message":   "All Buildings returned successfully",
-		}); err != nil {
-			log.Println(3, err)
-			return c.Status(500).JSON(&fiber.Map{
-				"success": false,
-				"message": err,
-			})
-		}
-	} else {
-		return c.Status(200).JSON(&fiber.Map{
-			"success": true,
-			"message": "No Records found for Building",
-		})
+	if err := c.JSON(&fiber.Map{
+		"success":   true,
+		"buildings": buildings,
+		"message":   "All Buildings returned successfully",
+	}); err != nil {
+		return utility.ErrResponse(c, "Error in getting buildings", 500, err)
 	}
 	return nil
 }
 
 // CreateBuilding handler
 func CreateBuilding(c *fiber.Ctx) error {
+
 	building := new(model.Building)
 	if err := c.BodyParser(building); err != nil {
-		log.Println(err)
-		return c.Status(400).JSON(&fiber.Map{
-			"success": false,
-			"message": err,
-		})
+		return utility.ErrResponse(c, "Error in creating building", 400, err)
 	}
+
 	err := building.CreateBuilding()
 	if err != nil {
-		log.Println(err)
-		return c.Status(500).JSON(&fiber.Map{
-			"success": false,
-			"message": err,
-		})
+		return utility.ErrResponse(c, "Error in creating building", 500, err)
 	}
 
 	// Return Building in JSON format
@@ -56,10 +40,7 @@ func CreateBuilding(c *fiber.Ctx) error {
 		"building": building,
 		"message":  "Building successfully created",
 	}); err != nil {
-		return c.Status(500).JSON(&fiber.Map{
-			"success": false,
-			"message": "Error creating Building",
-		})
+		return utility.ErrResponse(c, "Error in creating building", 500, err)
 	}
 	return nil
 }

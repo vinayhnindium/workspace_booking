@@ -3,6 +3,7 @@ module workspace_booking
 go 1.17
 
 require (
+	github.com/gofiber/fiber/v2 v2.30.0
 	github.com/jackc/pgx/v4 v4.16.1
 	github.com/joho/godotenv v1.4.0
 )
@@ -10,7 +11,6 @@ require (
 require (
 	github.com/andybalholm/brotli v1.0.4 // indirect
 	github.com/gofiber/fiber v1.14.6 // indirect
-	github.com/gofiber/fiber/v2 v2.30.0 // indirect
 	github.com/gofiber/utils v0.0.10 // indirect
 	github.com/gorilla/schema v1.1.0 // indirect
 	github.com/jackc/chunkreader/v2 v2.0.1 // indirect

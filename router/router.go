@@ -14,6 +14,8 @@ func SetupRoutes(app *fiber.App) {
 	api.Post("/roles", controller.CreateRole)
 
 	api.Post("/book_workspace", controller.CreateBooking)
+	api.Get("/workspace_details", controller.WorkSpacesDetails)
+
 	/* Building API's */
 	api.Get("/buildings", controller.AllBuildings)
 	api.Post("/buildings", controller.CreateBuilding)
@@ -25,4 +27,8 @@ func SetupRoutes(app *fiber.App) {
 	/* Location API's */
 	api.Get("/locations", controller.AllLocations)
 	api.Post("/locations", controller.CreateLocation)
+
+	/* Floor API's */
+	api.Get("/floors", controller.AllFloors)
+	api.Post("/floors", controller.CreateFloor)
 }

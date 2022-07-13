@@ -17,22 +17,32 @@ type City struct {
 
 // Buildings struct
 type Cities struct {
-	Cities []City `json:"cities"`
+	Cities []*City
 }
 
-func GetAllCities() []City {
+// Building struct
+type WorkSpaces struct {
+	CityList     []*City
+	LocationList []*Location
+	BuildingList []*Building
+	FloorList    []*Floor
+}
+
+func GetAllCities() []*City {
 	rows, e := migration.DbPool.Query(context.Background(), "select * from cities")
 	defer rows.Close()
 
 	// declare empty post variable
-	cities := make([]City, 0)
+	cities := make([]*City, 0)
 	// iterate over rows
 	for rows.Next() {
-		city := City{}
+		city := new(City)
+
 		e = rows.Scan(&city.Id, &city.Name, &city.CreatedAt, &city.UpdatedAt)
+
 		if e != nil {
 			fmt.Println("Failed to get buildings record :", e)
-			return []City{}
+			return []*City{}
 		}
 		cities = append(cities, city)
 	}
@@ -56,4 +66,17 @@ func GetCityByID(cityId int) City {
 		return City{}
 	}
 	return city
+}
+
+func GetAllDetails() WorkSpaces {
+	cities := GetAllCities()
+	locations := GetAllLocations()
+	buildings := GetAllBuildings()
+	floors := GetAllFloors()
+	return WorkSpaces{
+		CityList:     cities,
+		LocationList: locations,
+		BuildingList: buildings,
+		FloorList:    floors,
+	}
 }

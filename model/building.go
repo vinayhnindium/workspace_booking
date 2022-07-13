@@ -20,10 +20,10 @@ type Building struct {
 
 // Buildings struct
 type Buildings struct {
-	Buildings []Building `json:"buildings"`
+	Buildings []*Building
 }
 
-func GetAllBuildings() []Building {
+func GetAllBuildings() []*Building {
 	// query all data
 	rows, e := migration.DbPool.Query(context.Background(), "select * from buildings")
 	if e != nil {
@@ -32,16 +32,16 @@ func GetAllBuildings() []Building {
 	defer rows.Close()
 
 	// declare empty post variable
-	buildings := make([]Building, 0)
+	buildings := make([]*Building, 0)
 	// iterate over rows
 	for rows.Next() {
-		building := Building{}
+		building := new(Building)
 		e = rows.Scan(&building.Id, &building.Name, &building.LocationId, &building.Address, &building.CreatedAt, &building.UpdatedAt)
 		location := migration.DbPool.QueryRow(context.Background(), "select name from location where id = $1", &building.Id)
 		location.Scan(&building.LocationName)
 		if e != nil {
 			fmt.Println("Failed to get buildings record :", e)
-			return []Building{}
+			return []*Building{}
 		}
 		buildings = append(buildings, building)
 	}

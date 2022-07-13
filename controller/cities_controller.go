@@ -44,3 +44,16 @@ func CreateCity(c *fiber.Ctx) error {
 	}
 	return nil
 }
+
+func WorkSpacesDetails(c *fiber.Ctx) error {
+
+	workspace_details := model.GetAllDetails()
+	if err := c.JSON(&fiber.Map{
+		"success":           true,
+		"workspace_details": workspace_details,
+		"message":           "All workspace details returned successfully",
+	}); err != nil {
+		return utility.ErrResponse(c, "Error in getting cities", 500, err)
+	}
+	return nil
+}

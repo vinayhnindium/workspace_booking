@@ -28,6 +28,7 @@ func GetDbConnectionPool() *pgxpool.Pool {
 	CreateBuildingTable()
 	CreateCityTable()
 	CreateLocationTable()
+	CreateFloorTable()
 
 	return DbPool
 }

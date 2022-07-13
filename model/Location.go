@@ -53,9 +53,8 @@ func (location *Location) CreateLocation() error {
 
 func GetLocationByID(locationId int) Location {
 	location := Location{}
-	// rows := migration.DbPool.QueryRow(context.Background(), "select locations.id, locations.name, locations.city_id, cities.name as city_name, locations.created_at, locations.updated_at from locations LEFT JOIN cities ON locations.city_id = cities.id where locations.id = $1", locationId)
-	rows := migration.DbPool.QueryRow(context.Background(), "select * from locations where id = $1", locationId)
-	err := rows.Scan(&location.Id, &location.Name, &location.CityId, &location.CreatedAt, &location.UpdatedAt)
+	rows := migration.DbPool.QueryRow(context.Background(), "select locations.id, locations.name, locations.city_id, cities.name as city_name, locations.created_at, locations.updated_at from locations LEFT JOIN cities ON locations.city_id = cities.id where locations.id = $1", locationId)
+	err := rows.Scan(&location.Id, &location.Name, &location.CityId, &location.CityName, &location.CreatedAt, &location.UpdatedAt)
 	if err != nil {
 		fmt.Println("Failed to get locations record :", err)
 		return Location{}

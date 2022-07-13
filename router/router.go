@@ -31,4 +31,8 @@ func SetupRoutes(app *fiber.App) {
 	/* Floor API's */
 	api.Get("/floors", controller.AllFloors)
 	api.Post("/floors", controller.CreateFloor)
+
+	// Get available work-space
+
+	api.Get("/available_workspace", controller.GetAvaliableBookingSpace)
 }

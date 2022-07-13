@@ -22,12 +22,12 @@ func GetDbConnectionPool() *pgxpool.Pool {
 	checkError(err)
 	DbPool = db
 
-	// Dont change the order here
+	// Don't change the order here
 	CreateRoleTable()
 	CreateBookingsTable()
-	CreateBuildingTable()
 	CreateCityTable()
 	CreateLocationTable()
+	CreateBuildingTable()
 	CreateFloorTable()
 
 	return DbPool

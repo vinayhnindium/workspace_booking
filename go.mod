@@ -10,6 +10,19 @@ require (
 
 require (
 	github.com/andybalholm/brotli v1.0.4 // indirect
+	github.com/cilium/ebpf v0.7.0 // indirect
+	github.com/cosiner/argv v0.1.0 // indirect
+	github.com/cpuguy83/go-md2man/v2 v2.0.0 // indirect
+	github.com/derekparker/trie v0.0.0-20200317170641-1fdf38b7b0e9 // indirect
+	github.com/go-delve/delve v1.8.2 // indirect
+	github.com/go-delve/liner v1.2.2-1 // indirect
+	github.com/gofiber/fiber v1.14.6 // indirect
+	github.com/gofiber/fiber/v2 v2.35.0 // indirect
+	github.com/gofiber/jwt/v3 v3.2.13 // indirect
+	github.com/gofiber/utils v0.0.10 // indirect
+	github.com/golang-jwt/jwt/v4 v4.4.2 // indirect
+	github.com/google/go-dap v0.6.0 // indirect
+	github.com/gorilla/schema v1.1.0 // indirect
 	github.com/jackc/chunkreader/v2 v2.0.1 // indirect
 	github.com/jackc/pgconn v1.12.1 // indirect
 	github.com/jackc/pgio v1.0.0 // indirect
@@ -21,7 +34,7 @@ require (
 	github.com/klauspost/compress v1.15.1 // indirect
 	github.com/lib/pq v1.10.4 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
-	github.com/valyala/fasthttp v1.34.0 // indirect
+	github.com/valyala/fasthttp v1.38.0 // indirect
 	github.com/valyala/tcplisten v1.0.0 // indirect
 	golang.org/x/crypto v0.0.0-20220214200702-86341886e292 // indirect
 	golang.org/x/sys v0.0.0-20220330033206-e17cdc41300f // indirect

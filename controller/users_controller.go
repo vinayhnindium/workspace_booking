@@ -57,8 +57,7 @@ func GetUser(c *fiber.Ctx) error {
 	}
 
 	return c.JSON(fiber.Map{
-		"message": "User Successfully Added",
-		"user":    u,
+		"user": u,
 	})
 }
 

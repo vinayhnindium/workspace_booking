@@ -25,8 +25,8 @@ func (u *User) InsertUser() error {
 	dt := time.Now()
 	// var role_id *int
 	migration.DbPool.QueryRow(context.Background(), "SELECT id, name, created_at, updated_at FROM roles where roles.name=$1", "Employee").Scan(&u.Role.Id, &u.Role.Name, &u.Role.CreatedAt, &u.Role.UpdatedAt)
-	query := "INSERT INTO users (name, email, encrypted_password, created_at, updated_at, role_id) VALUES ($1, $2, $3, $4, $5, $6) RETURNING users.id, users.created_at, users.updated_at"
-	migration.DbPool.QueryRow(context.Background(), query, u.Name, u.Email, u.Password, dt, dt, u.Role.Id).Scan(&u.ID, &u.CreatedAt, &u.UpdatedAt)
+	query := "INSERT INTO users (name, email, encrypted_password, role_id, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id, created_at, updated_at"
+	migration.DbPool.QueryRow(context.Background(), query, u.Name, u.Email, u.Password, u.Role.Id, dt, dt).Scan(&u.ID, &u.CreatedAt, &u.UpdatedAt)
 	return nil
 }
 

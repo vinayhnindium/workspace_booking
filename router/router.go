@@ -17,6 +17,10 @@ func SetupRoutes(app *fiber.App) {
 	api.Post("/sign-up", controller.Register)
 	api.Post("/sign-in", controller.Login)
 
+	api.Get("/roles", controller.AllRoles)
+	api.Post("/roles",  controller.CreateRole)
+
+
 	// JWT Middleware
 	app.Use(jwtware.New(jwtware.Config{
 		SigningKey: []byte(config.GetJWTSecret()),
@@ -46,22 +50,6 @@ func SetupRoutes(app *fiber.App) {
 	})
 
 	// Authorization routes
-
-	api.Get("/roles", func(c *fiber.Ctx) error {
-		user := c.Locals("verify")
-		if user == "true" {
-			return controller.AllRoles(c)
-		}
-		return c.SendStatus(fiber.StatusForbidden)
-	})
-
-	api.Post("/roles", func(c *fiber.Ctx) error {
-		user := c.Locals("verify")
-		if user == "true" {
-			return controller.CreateRole(c)
-		}
-		return c.SendStatus(fiber.StatusForbidden)
-	})
 
 	api.Post("/users", func(c *fiber.Ctx) error {
 		user := c.Locals("verify")

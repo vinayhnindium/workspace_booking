@@ -55,7 +55,6 @@ func GetAvaliableBookingSpace(c *fiber.Ctx)error{
 	if err := c.JSON(&fiber.Map{
 		"success":   true,
 		"available_workspace": available_work_space  ,
-		"message":   "All Buildings returned successfully",
 	}); err != nil {
 		return utility.ErrResponse(c, "Error in getting buildings", 500, err)
 	}

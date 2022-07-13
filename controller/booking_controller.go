@@ -19,6 +19,12 @@ func CreateBooking(c *fiber.Ctx) error {
 		return utility.ErrResponse(c, "Error in creation", 500, err)
 	}
 
+	err = model.BulkInsertBookingParticipant(workspaceParams.Id, workspaceParams.UserIds)
+
+	if err != nil {
+		return utility.ErrResponse(c, "Error in creating participants", 500, err)
+	}
+
 	if err := c.JSON(&fiber.Map{
 		"success": true,
 		"role":    workspaceParams,

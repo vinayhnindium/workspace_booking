@@ -37,7 +37,7 @@ func GetAllBuildings() []*Building {
 	for rows.Next() {
 		building := new(Building)
 		e = rows.Scan(&building.Id, &building.Name, &building.LocationId, &building.Address, &building.CreatedAt, &building.UpdatedAt)
-		location := migration.DbPool.QueryRow(context.Background(), "select name from location where id = $1", &building.Id)
+		location := migration.DbPool.QueryRow(context.Background(), "select name from locations where id = $1", &building.LocationId)
 		location.Scan(&building.LocationName)
 		if e != nil {
 			fmt.Println("Failed to get buildings record :", e)

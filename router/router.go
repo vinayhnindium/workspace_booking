@@ -110,4 +110,80 @@ func SetupRoutes(app *fiber.App) {
 		}
 		return c.SendStatus(fiber.StatusForbidden)
 	})
+
+	api.Get("/workspace_details", func(c *fiber.Ctx) error {
+		user := c.Locals("verify")
+		if user == "true" {
+			return controller.WorkSpacesDetails(c)
+		}
+		return c.SendStatus(fiber.StatusForbidden)
+	})
+
+	/* Building API's */
+	api.Post("/buildings", func(c *fiber.Ctx) error {
+		user := c.Locals("verify")
+		if user == "true" {
+			return controller.CreateBuilding(c)
+		}
+		return c.SendStatus(fiber.StatusForbidden)
+	})
+
+	api.Get("/buildings", func(c *fiber.Ctx) error {
+		user := c.Locals("verify")
+		if user == "true" {
+			return controller.AllBuildings(c)
+		}
+		return c.SendStatus(fiber.StatusForbidden)
+	})
+
+	/* City API's */
+	api.Post("/cities", func(c *fiber.Ctx) error {
+		user := c.Locals("verify")
+		if user == "true" {
+			return controller.CreateCity(c)
+		}
+		return c.SendStatus(fiber.StatusForbidden)
+	})
+
+	api.Get("/cities", func(c *fiber.Ctx) error {
+		user := c.Locals("verify")
+		if user == "true" {
+			return controller.AllCities(c)
+		}
+		return c.SendStatus(fiber.StatusForbidden)
+	})
+
+	/* Location API's */
+	api.Post("/locations", func(c *fiber.Ctx) error {
+		user := c.Locals("verify")
+		if user == "true" {
+			return controller.CreateLocation(c)
+		}
+		return c.SendStatus(fiber.StatusForbidden)
+	})
+
+	api.Get("/locations", func(c *fiber.Ctx) error {
+		user := c.Locals("verify")
+		if user == "true" {
+			return controller.AllLocations(c)
+		}
+		return c.SendStatus(fiber.StatusForbidden)
+	})
+
+	/* Floor API's */
+	api.Post("/floors", func(c *fiber.Ctx) error {
+		user := c.Locals("verify")
+		if user == "true" {
+			return controller.CreateFloor(c)
+		}
+		return c.SendStatus(fiber.StatusForbidden)
+	})
+
+	api.Get("/floors", func(c *fiber.Ctx) error {
+		user := c.Locals("verify")
+		if user == "true" {
+			return controller.AllFloors(c)
+		}
+		return c.SendStatus(fiber.StatusForbidden)
+	})
 }

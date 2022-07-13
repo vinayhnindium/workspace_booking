@@ -25,4 +25,4 @@ will be picking this once the structure completes
 workspace_booking
 
 ## Run server with 
-`npx nodemon --exec go run main.go --signal SIGTERM`
+`npx nodemon --watch './**/*.go' --signal SIGTERM --exec 'go' run main.go`

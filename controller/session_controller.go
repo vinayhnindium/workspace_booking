@@ -2,6 +2,7 @@ package controller
 
 import (
 	"log"
+	"strings"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
@@ -9,6 +10,7 @@ import (
 
 	"workspace_booking/config"
 	m "workspace_booking/model"
+	"workspace_booking/utility"
 
 	"golang.org/x/crypto/bcrypt"
 )
@@ -16,7 +18,7 @@ import (
 func Register(c *fiber.Ctx) error {
 	var data map[string]string
 	if err := c.BodyParser(&data); err != nil {
-		return err
+		return utility.ErrResponse(c, "Error in parsing", 400, err)
 	}
 	log.Println(data)
 
@@ -31,10 +33,23 @@ func Register(c *fiber.Ctx) error {
 	}
 	log.Println("pss", password)
 
-	err := u.InsertUser()
-	if err != nil {
-		return c.Status(400).SendString(err.Error())
+	errors := utility.ValidateUserStruct(*u)
+	if errors != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(errors)
 	}
+
+	email_domain := strings.Split(u.Email, "@")[1]
+
+	if email_domain != "indiumsoft.com" {
+		return utility.ErrResponse(c, "Invalid Email", 500, nil)
+	}
+
+	err := u.InsertUser()
+
+	if err != nil || u.ID == 0 {
+		return utility.ErrResponse(c, "User is already exist", 500, err)
+	}
+
 	log.Println("u.pss", u.Password)
 	log.Println(u)
 	return c.JSON(&fiber.Map{
@@ -51,19 +66,19 @@ func Login(c *fiber.Ctx) error {
 	var data map[string]string
 
 	if err := c.BodyParser(&data); err != nil {
-		return err
+		return utility.ErrResponse(c, "Error in parsing", 400, err)
 	}
 
 	u := new(m.User)
 
 	if err := c.BodyParser(u); err != nil {
-		return c.Status(400).SendString(err.Error())
+		return utility.ErrResponse(c, "Error in parsing", 400, err)
 	}
 
 	err := u.LoginUser()
 
 	if err != nil {
-		return c.Status(400).SendString(err.Error())
+		return utility.ErrResponse(c, "Invalid Access!", 401, err)
 	}
 
 	if u.ID == 0 {
@@ -76,7 +91,7 @@ func Login(c *fiber.Ctx) error {
 	err = bcrypt.CompareHashAndPassword(u.Password, []byte(data["password"]))
 
 	if err != nil {
-		return c.Status(400).SendString(err.Error())
+		return utility.ErrResponse(c, "Incorrect Password", 400, err)
 	}
 
 	// Create the Claims
@@ -97,11 +112,9 @@ func Login(c *fiber.Ctx) error {
 	}
 
 	c.Cookie(&fiber.Cookie{
-		Name:     u.Email,
-		Value:    t,
-		Expires:  time.Now().Add(24 * time.Hour),
-		HTTPOnly: true,
-		SameSite: "lax",
+		Name:    u.Email,
+		Value:   t,
+		Expires: time.Now().Add(24 * time.Hour),
 	})
 
 	return c.JSON(fiber.Map{
@@ -117,11 +130,9 @@ func Logout(c *fiber.Ctx) error {
 	email := claims["email"].(string)
 	log.Println(email)
 	c.Cookie(&fiber.Cookie{
-		Name:     email,
-		Value:    "",
-		Expires:  time.Now().Add(24 * time.Hour),
-		HTTPOnly: true,
-		SameSite: "lax",
+		Name:    email,
+		Value:   "",
+		Expires: time.Now().Add(5 * time.Second),
 	})
 	return c.JSON(fiber.Map{
 		"message": "Successfully logout",

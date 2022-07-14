@@ -1,6 +1,7 @@
 package router
 
 import (
+	"strings"
 	"workspace_booking/config"
 	"workspace_booking/controller"
 
@@ -26,12 +27,9 @@ func SetupRoutes(app *fiber.App) {
 	}))
 
 	app.Use(func(c *fiber.Ctx) error {
-		user := c.Locals("user").(*jwt.Token)
-		claims := user.Claims.(jwt.MapClaims)
-		email := claims["email"].(string)
-		cookie := c.Cookies(email)
-		var err error
-		token, err := jwt.Parse(cookie, func(token *jwt.Token) (interface{}, error) {
+		url_token := c.Get("Authorization")
+		u_token := strings.Split(url_token, " ")[1]
+		token, err := jwt.Parse(u_token, func(token *jwt.Token) (interface{}, error) {
 			return []byte(config.GetJWTSecret()), nil
 		})
 		if err != nil {
@@ -39,8 +37,7 @@ func SetupRoutes(app *fiber.App) {
 				"message": "Invalid Access",
 			})
 		}
-
-		if token.Raw == cookie {
+		if token.Raw == u_token {
 			c.Locals("verify", "true")
 		} else {
 			c.Locals("verify", "false")

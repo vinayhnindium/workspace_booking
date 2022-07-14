@@ -2,6 +2,7 @@ package controller
 
 import (
 	"log"
+	"strings"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
@@ -35,6 +36,12 @@ func Register(c *fiber.Ctx) error {
 	errors := utility.ValidateUserStruct(*u)
 	if errors != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(errors)
+	}
+
+	email_domain := strings.Split(u.Email, "@")[1]
+
+	if email_domain != "indiumsoft.com" {
+		return utility.ErrResponse(c, "Invalid Email", 500, nil)
 	}
 
 	err := u.InsertUser()
@@ -105,11 +112,9 @@ func Login(c *fiber.Ctx) error {
 	}
 
 	c.Cookie(&fiber.Cookie{
-		Name:     u.Email,
-		Value:    t,
-		Expires:  time.Now().Add(24 * time.Hour),
-		HTTPOnly: true,
-		SameSite: "lax",
+		Name:    u.Email,
+		Value:   t,
+		Expires: time.Now().Add(24 * time.Hour),
 	})
 
 	return c.JSON(fiber.Map{
@@ -125,11 +130,9 @@ func Logout(c *fiber.Ctx) error {
 	email := claims["email"].(string)
 	log.Println(email)
 	c.Cookie(&fiber.Cookie{
-		Name:     email,
-		Value:    "",
-		Expires:  time.Now().Add(5 * time.Second),
-		HTTPOnly: true,
-		SameSite: "lax",
+		Name:    email,
+		Value:   "",
+		Expires: time.Now().Add(5 * time.Second),
 	})
 	return c.JSON(fiber.Map{
 		"message": "Successfully logout",

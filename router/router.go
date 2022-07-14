@@ -18,8 +18,7 @@ func SetupRoutes(app *fiber.App) {
 	api.Post("/sign-in", controller.Login)
 
 	api.Get("/roles", controller.AllRoles)
-	api.Post("/roles",  controller.CreateRole)
-
+	api.Post("/roles", controller.CreateRole)
 
 	// JWT Middleware
 	app.Use(jwtware.New(jwtware.Config{
@@ -180,6 +179,14 @@ func SetupRoutes(app *fiber.App) {
 		user := c.Locals("verify")
 		if user == "true" {
 			return controller.GetAvaliableBookingSpace(c)
+		}
+		return c.SendStatus(fiber.StatusForbidden)
+	})
+
+	api.Get("/my_bookings", func(c *fiber.Ctx) error {
+		user := c.Locals("verify")
+		if user == "true" {
+			return controller.MyBookingDetails(c)
 		}
 		return c.SendStatus(fiber.StatusForbidden)
 	})

@@ -2,6 +2,7 @@ package model
 
 import (
 	"context"
+	"fmt"
 	"time"
 	"workspace_booking/migration"
 )
@@ -13,6 +14,14 @@ type BookingParticipant struct {
 	UserId    int16     `json:"user_id"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
+}
+type BookingParticipantDetail struct {
+	Id        int16  `json:"id"`
+	UserName  string `json:"user_name"`
+	UserEmail string `json:"user_email"`
+}
+type BookingParticipantDetails struct {
+	BookingParticipantDetails []*BookingParticipantDetail
 }
 
 func (bp *BookingParticipant) CreateBookingParticipant() error {
@@ -38,4 +47,25 @@ func BulkInsertBookingParticipant(bookingId int16, userIds []int16) error {
 		}
 	}
 	return nil
+}
+
+func GetBookingParticipantsDetailsByBookingId(bookingId int16) []*BookingParticipantDetail {
+	// query all booking_participants data
+	participants, e := migration.DbPool.Query(context.Background(), "SELECT user_id, (select name from users where id = booking_participants.user_id) as user_name, (select email from users where id = booking_participants.user_id) as user_email from booking_participants where booking_id = $1", bookingId)
+
+	defer participants.Close()
+	// declare BookingParticipantDetail array variable
+	booking_participants_details := make([]*BookingParticipantDetail, 0)
+
+	// iterate over booking_participants
+	for participants.Next() {
+		participant := new(BookingParticipantDetail)
+		e = participants.Scan(&participant.Id, &participant.UserName, &participant.UserEmail)
+		booking_participants_details = append(booking_participants_details, participant)
+	}
+	if e != nil {
+		fmt.Println("Failed to get bookings_details record :", e)
+		return []*BookingParticipantDetail{}
+	}
+	return booking_participants_details
 }

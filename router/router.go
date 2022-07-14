@@ -178,7 +178,7 @@ func SetupRoutes(app *fiber.App) {
 	api.Get("/available_workspace", func(c *fiber.Ctx) error {
 		user := c.Locals("verify")
 		if user == "true" {
-			return controller.GetAvaliableBookingSpace(c)
+			return controller.GetAvailableBookingSpace(c)
 		}
 		return c.SendStatus(fiber.StatusForbidden)
 	})

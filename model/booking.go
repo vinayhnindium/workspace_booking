@@ -67,8 +67,8 @@ func (b *Booking) InsertBooking() error {
 }
 
 func GetMyBookingDetails(isForPast bool, userId int) []*BookingDetail {
-	time := time.Now()
-	currentDate := time.Format("2006-01-02")
+	currTime := time.Now()
+	currentDate := currTime.Format("2006-01-02")
 	query := "SELECT id, city_id, location_id, building_id, floor_id, user_id, (select name from cities where id = bookings.city_id) as city_name, (select name from locations where id = bookings.location_id) as location_name, (select name from buildings where id = bookings.building_id) as city_name, (select name from floors where id = bookings.floor_id) as floor_name, (select name from users where id = bookings.user_id) as user_name, from_date, to_date, purpose, workspaces_booked, created_at, updated_at FROM bookings WHERE user_id = $1"
 	var condition string
 	if isForPast {
@@ -85,7 +85,7 @@ func GetMyBookingDetails(isForPast bool, userId int) []*BookingDetail {
 	defer bookings.Close()
 
 	// declare BookingDetail array variable
-	bookings_details := make([]*BookingDetail, 0)
+	bookingsDetails := make([]*BookingDetail, 0)
 
 	// iterate over bookings
 	for bookings.Next() {
@@ -96,7 +96,7 @@ func GetMyBookingDetails(isForPast bool, userId int) []*BookingDetail {
 			return []*BookingDetail{}
 		}
 		booking.BookingParticipant = GetBookingParticipantsDetailsByBookingId(booking.Id)
-		bookings_details = append(bookings_details, booking)
+		bookingsDetails = append(bookingsDetails, booking)
 	}
-	return bookings_details
+	return bookingsDetails
 }

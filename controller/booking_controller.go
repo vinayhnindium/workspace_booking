@@ -1,9 +1,13 @@
 package controller
 
 import (
-	"github.com/gofiber/fiber/v2"
+	"context"
+	"strconv"
+	"workspace_booking/migration"
 	"workspace_booking/model"
 	"workspace_booking/utility"
+
+	"github.com/gofiber/fiber/v2"
 )
 
 // CreateBooking handler
@@ -20,10 +24,10 @@ func CreateBooking(c *fiber.Ctx) error {
 	}
 
 	err = model.BulkInsertBookingParticipant(workspaceParams.Id, workspaceParams.UserIds)
-
-	if err != nil {
-		return utility.ErrResponse(c, "Error in creating participants", 500, err)
-	}
+ 
+    if err != nil {
+        return utility.ErrResponse(c, "Error in creating participants", 500, err)
+    }
 
 	if err := c.JSON(&fiber.Map{
 		"success": true,
@@ -31,6 +35,34 @@ func CreateBooking(c *fiber.Ctx) error {
 		"message": "Booking successfully created",
 	}); err != nil {
 		return utility.ErrResponse(c, "Error in response", 500, err)
+	}
+	return nil
+}
+
+func GetAvaliableBookingSpace(c *fiber.Ctx)error{
+	// query 
+	floor_id := c.Query("floor_id")
+	from_date := c.Query("from_date")
+	to_date := c.Query("to_date")
+
+	// Type Casting
+	floorId, _ := strconv.Atoi(floor_id)
+	var total_work_space *int
+
+	// DB query call.
+	rows := migration.DbPool.QueryRow(context.Background(), 
+	"select SUM(workspaces_booked) as total_workspace from bookings where floor_id = $1 and from_date >= $2 and to_date <= $3", floorId, from_date, to_date)
+
+	// getting total number of booking space 
+	floor := model.GetFloorByID(floorId)
+
+	rows.Scan(&total_work_space)
+	available_work_space := (floor.TotalWorkSpace - *total_work_space)
+	if err := c.JSON(&fiber.Map{
+		"success":   true,
+		"available_workspace": available_work_space  ,
+	}); err != nil {
+		return utility.ErrResponse(c, "Error in getting buildings", 500, err)
 	}
 	return nil
 }

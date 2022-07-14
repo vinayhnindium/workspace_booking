@@ -27,6 +27,7 @@ type WorkSpaces struct {
 	BuildingList []*Building
 	FloorList    []*Floor
 	Purpose      []string
+	UserList     []User
 }
 
 func GetAllCities() []*City {
@@ -74,11 +75,14 @@ func GetAllDetails() WorkSpaces {
 	locations := GetAllLocations()
 	buildings := GetAllBuildings()
 	floors := GetAllFloors()
+	user := new(Users)
+	users, _ := user.FetchUsers()
 	return WorkSpaces{
 		CityList:     cities,
 		LocationList: locations,
 		BuildingList: buildings,
 		FloorList:    floors,
 		Purpose:      []string{"Team meeting", "Client Call", "Monthly Sync-up", "Others"},
+		UserList:     users.Users,
 	}
 }

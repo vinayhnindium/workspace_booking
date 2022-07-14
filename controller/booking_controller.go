@@ -1,9 +1,15 @@
 package controller
 
 import (
-	"github.com/gofiber/fiber/v2"
+	"context"
+	"fmt"
+	"github.com/golang-jwt/jwt/v4"
+	"strconv"
+	"workspace_booking/migration"
 	"workspace_booking/model"
 	"workspace_booking/utility"
+
+	"github.com/gofiber/fiber/v2"
 )
 
 // CreateBooking handler
@@ -31,6 +37,72 @@ func CreateBooking(c *fiber.Ctx) error {
 		"message": "Booking successfully created",
 	}); err != nil {
 		return utility.ErrResponse(c, "Error in response", 500, err)
+	}
+	return nil
+}
+
+func GetAvailableBookingSpace(c *fiber.Ctx) error {
+	// query
+	reqFloorId := c.Query("floor_id")
+	fromDate := c.Query("from_date")
+	toDate := c.Query("to_date")
+
+	// Type Casting
+	floorId, _ := strconv.Atoi(reqFloorId)
+	var totalWorkSpace *int
+
+	// DB query call.
+	rows := migration.DbPool.QueryRow(context.Background(),
+		"select SUM(workspaces_booked) as total_workspace from bookings where floor_id = $1 and from_date >= $2 and to_date <= $3", floorId, fromDate, toDate)
+
+	// getting total number of booking space
+	floor := model.GetFloorByID(floorId)
+
+	err := rows.Scan(&totalWorkSpace)
+	if err != nil {
+		return err
+	}
+	availableWorkSpace := floor.TotalWorkSpace - *totalWorkSpace
+	if err := c.JSON(&fiber.Map{
+		"success":             true,
+		"available_workspace": availableWorkSpace,
+	}); err != nil {
+		return utility.ErrResponse(c, "Error in getting buildings", 500, err)
+	}
+	return nil
+}
+
+func WorkSpacesDetails(c *fiber.Ctx) error {
+
+	workspaceDetails := model.GetAllDetails()
+	if err := c.JSON(&fiber.Map{
+		"success":           true,
+		"workspace_details": workspaceDetails,
+		"message":           "All workspace details returned successfully",
+	}); err != nil {
+		return utility.ErrResponse(c, "Error in getting workspace details", 500, err)
+	}
+	return nil
+}
+
+func MyBookingDetails(c *fiber.Ctx) error {
+	user := c.Locals("user").(*jwt.Token)
+	claims := user.Claims.(jwt.MapClaims)
+
+	var userId int
+
+	currentUserId := fmt.Sprintf("%v", claims["id"])
+	userId, _ = strconv.Atoi(currentUserId)
+
+	workspaceDetails := model.GetMyBookingDetails(true, userId)
+	pastBookingDetails := model.GetMyBookingDetails(false, userId)
+	if err := c.JSON(&fiber.Map{
+		"success":                  true,
+		"upcoming_booking_details": workspaceDetails,
+		"past_booking_details":     pastBookingDetails,
+		"message":                  "All My bookings returned successfully",
+	}); err != nil {
+		return utility.ErrResponse(c, "Error in getting My bookings", 500, err)
 	}
 	return nil
 }

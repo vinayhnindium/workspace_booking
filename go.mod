@@ -15,6 +15,9 @@ require (
 	github.com/derekparker/trie v0.0.0-20200317170641-1fdf38b7b0e9 // indirect
 	github.com/go-delve/delve v1.8.2 // indirect
 	github.com/go-delve/liner v1.2.2-1 // indirect
+	github.com/go-playground/locales v0.14.0 // indirect
+	github.com/go-playground/universal-translator v0.18.0 // indirect
+	github.com/go-playground/validator/v10 v10.11.0 // indirect
 	github.com/gofiber/fiber v1.14.6 // indirect
 	github.com/gofiber/fiber/v2 v2.35.0 // indirect
 	github.com/gofiber/jwt/v3 v3.2.13 // indirect
@@ -32,6 +35,7 @@ require (
 	github.com/jackc/puddle v1.2.1 // indirect
 	github.com/klauspost/compress v1.15.1 // indirect
 	github.com/konsorten/go-windows-terminal-sequences v1.0.3 // indirect
+	github.com/leodido/go-urn v1.2.1 // indirect
 	github.com/lib/pq v1.10.4 // indirect
 	github.com/mattn/go-colorable v0.1.7 // indirect
 	github.com/mattn/go-isatty v0.0.12 // indirect

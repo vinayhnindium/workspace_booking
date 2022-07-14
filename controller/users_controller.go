@@ -3,6 +3,7 @@ package controller
 import (
 	"strconv"
 	m "workspace_booking/model"
+	"workspace_booking/utility"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -11,12 +12,12 @@ func CreateUser(c *fiber.Ctx) error {
 	u := new(m.User)
 
 	if err := c.BodyParser(u); err != nil {
-		return c.Status(400).SendString(err.Error())
+		return utility.ErrResponse(c, "Error in parsing", 400, err)
 	}
 
 	err := u.InsertUser()
 	if err != nil {
-		return c.Status(400).SendString(err.Error())
+		return utility.ErrResponse(c, "Error in creating user", 400, err)
 	}
 
 	return c.JSON(fiber.Map{
@@ -31,7 +32,7 @@ func GetUsers(c *fiber.Ctx) error {
 	users, err := users.FetchUsers()
 
 	if err != nil {
-		return c.Status(400).SendString(err.Error())
+		return utility.ErrResponse(c, "Error in fetching users", 400, err)
 	}
 
 	return c.JSON(fiber.Map{
@@ -53,7 +54,7 @@ func GetUser(c *fiber.Ctx) error {
 
 	// user, err := m.FetchUser(db, id)
 	if err != nil {
-		return c.Status(400).SendString(err.Error())
+		return utility.ErrResponse(c, "Error in fetching user", 400, err)
 	}
 
 	return c.JSON(fiber.Map{
@@ -72,12 +73,12 @@ func EditUser(c *fiber.Ctx) error {
 	u := &m.User{ID: i}
 
 	if err := c.BodyParser(u); err != nil {
-		return c.Status(400).SendString(err.Error())
+		return utility.ErrResponse(c, "Error in parsing", 400, err)
 	}
 	err := u.UpdateUser()
 
 	if err != nil {
-		return c.Status(400).SendString(err.Error())
+		return utility.ErrResponse(c, "Error in updating user", 400, err)
 	}
 
 	return c.JSON(fiber.Map{
@@ -89,18 +90,14 @@ func EditUser(c *fiber.Ctx) error {
 func DeleteUser(c *fiber.Ctx) error {
 	id := c.Params("id")
 
-	i, e := strconv.Atoi(id)
-
-	if e != nil {
-		return c.Status(400).SendString(e.Error())
-	}
+	i, _ := strconv.Atoi(id)
 
 	u := &m.User{ID: i}
 
 	err := u.DeleteUser()
 
 	if err != nil {
-		return c.Status(400).SendString(err.Error())
+		return utility.ErrResponse(c, "Error in deleting user", 400, err)
 	}
 
 	return c.JSON(fiber.Map{

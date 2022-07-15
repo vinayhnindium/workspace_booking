@@ -38,9 +38,9 @@ func Register(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(errors)
 	}
 
-	email_domain := strings.Split(u.Email, "@")[1]
+	emailDomain := strings.Split(u.Email, "@")[1]
 
-	if email_domain != "indiumsoft.com" {
+	if emailDomain != config.GetEmailDomain() {
 		return utility.ErrResponse(c, "Invalid Email", 500, nil)
 	}
 

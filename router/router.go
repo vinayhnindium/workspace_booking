@@ -171,7 +171,7 @@ func SetupRoutes(app *fiber.App) {
 		return c.SendStatus(fiber.StatusForbidden)
 	})
 
-	/* available worspaces count*/
+	/* available workspaces count*/
 	api.Get("/available_workspace", func(c *fiber.Ctx) error {
 		user := c.Locals("verify")
 		if user == "true" {

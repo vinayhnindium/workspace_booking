@@ -38,7 +38,10 @@ func GetAllBuildings() []*Building {
 		building := new(Building)
 		e = rows.Scan(&building.Id, &building.Name, &building.LocationId, &building.Address, &building.CreatedAt, &building.UpdatedAt)
 		location := migration.DbPool.QueryRow(context.Background(), "select name from locations where id = $1", &building.LocationId)
-		location.Scan(&building.LocationName)
+		err := location.Scan(&building.LocationName)
+		if err != nil {
+			return nil
+		}
 		if e != nil {
 			fmt.Println("Failed to get buildings record :", e)
 			return []*Building{}
@@ -52,9 +55,15 @@ func (building *Building) CreateBuilding() error {
 	dt := time.Now()
 	query := "INSERT INTO buildings (name, location_id, address, created_at, updated_at) VALUES ($1, $2, $3, $4, $5) RETURNING id, created_at, updated_at"
 	d := migration.DbPool.QueryRow(context.Background(), query, &building.Name, &building.LocationId, &building.Address, dt, dt)
-	d.Scan(&building.Id, &building.CreatedAt, &building.UpdatedAt)
+	err := d.Scan(&building.Id, &building.CreatedAt, &building.UpdatedAt)
+	if err != nil {
+		return err
+	}
 	location := migration.DbPool.QueryRow(context.Background(), "select name from locations where id = $1", &building.LocationId)
-	location.Scan(&building.LocationName)
+	err = location.Scan(&building.LocationName)
+	if err != nil {
+		return err
+	}
 	return nil
 }
 

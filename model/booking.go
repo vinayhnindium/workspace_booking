@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"time"
+	"workspace_booking/config"
 	"workspace_booking/migration"
 )
 
@@ -68,7 +69,7 @@ func (b *Booking) InsertBooking() error {
 
 func GetMyBookingDetails(isForPast bool, userId int) []*BookingDetail {
 	currTime := time.Now()
-	currentDate := currTime.Format("2006-01-02")
+	currentDate := config.SqlTimeFormat(currTime)
 	query := "SELECT id, city_id, location_id, building_id, floor_id, user_id, (select name from cities where id = bookings.city_id) as city_name, (select name from locations where id = bookings.location_id) as location_name, (select name from buildings where id = bookings.building_id) as city_name, (select name from floors where id = bookings.floor_id) as floor_name, (select name from users where id = bookings.user_id) as user_name, from_date, to_date, purpose, workspaces_booked, created_at, updated_at FROM bookings WHERE user_id = $1"
 	var condition string
 	if isForPast {
@@ -76,9 +77,9 @@ func GetMyBookingDetails(isForPast bool, userId int) []*BookingDetail {
 	} else {
 		condition = " AND from_date < $2"
 	}
-	final_query := query + condition
+	finalQuery := query + condition
 	// query all bookings data
-	bookings, e := migration.DbPool.Query(context.Background(), final_query, userId, currentDate)
+	bookings, e := migration.DbPool.Query(context.Background(), finalQuery, userId, currentDate)
 	if e != nil {
 		return nil
 	}

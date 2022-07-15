@@ -45,9 +45,15 @@ func (location *Location) CreateLocation() error {
 	dt := time.Now()
 	query := "INSERT INTO locations (name, city_id, created_at, updated_at) VALUES ($1, $2, $3, $4) RETURNING id, created_at, updated_at"
 	city := migration.DbPool.QueryRow(context.Background(), "select name from cities where id = $1", location.CityId)
-	city.Scan(&location.CityName)
+	err := city.Scan(&location.CityName)
+	if err != nil {
+		return err
+	}
 	d := migration.DbPool.QueryRow(context.Background(), query, &location.Name, &location.CityId, dt, dt)
-	d.Scan(&location.Id, &location.CreatedAt, &location.UpdatedAt)
+	err = d.Scan(&location.Id, &location.CreatedAt, &location.UpdatedAt)
+	if err != nil {
+		return err
+	}
 	return nil
 }
 

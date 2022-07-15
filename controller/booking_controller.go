@@ -3,11 +3,12 @@ package controller
 import (
 	"context"
 	"fmt"
-	"github.com/golang-jwt/jwt/v4"
 	"strconv"
 	"workspace_booking/migration"
 	"workspace_booking/model"
 	"workspace_booking/utility"
+
+	"github.com/golang-jwt/jwt/v4"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -42,21 +43,27 @@ func CreateBooking(c *fiber.Ctx) error {
 }
 
 func GetAvailableBookingSpace(c *fiber.Ctx) error {
-	// query
-	reqFloorId := c.Query("floor_id")
-	fromDate := c.Query("from_date")
-	toDate := c.Query("to_date")
 
-	// Type Casting
-	floorId, _ := strconv.Atoi(reqFloorId)
+	type params struct {
+		FloorId  int    `json:"floor_id"`
+		FromDate string `json:"from_date"`
+		ToDate   string `json:"to_date"`
+	}
+
+	workspaceParams := new(params)
+
+	if err := c.BodyParser(workspaceParams); err != nil {
+		return utility.ErrResponse(c, "Error in body parsing", 400, err)
+	}
+
 	var totalWorkSpace *int
 
 	// DB query call.
 	rows := migration.DbPool.QueryRow(context.Background(),
-		"select SUM(workspaces_booked) as total_workspace from bookings where floor_id = $1 and from_date >= $2 and to_date <= $3", floorId, fromDate, toDate)
+		"select SUM(workspaces_booked) as total_workspace from bookings where floor_id = $1 and from_date >= $2 and to_date <= $3", workspaceParams.FloorId, workspaceParams.FromDate, workspaceParams.ToDate)
 
 	// getting total number of booking space
-	floor := model.GetFloorByID(floorId)
+	floor := model.GetFloorByID(workspaceParams.FloorId)
 
 	err := rows.Scan(&totalWorkSpace)
 	if err != nil {

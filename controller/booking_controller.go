@@ -69,7 +69,14 @@ func GetAvailableBookingSpace(c *fiber.Ctx) error {
 	if err != nil {
 		return err
 	}
-	availableWorkSpace := floor.TotalWorkSpace - *totalWorkSpace
+	var availableWorkSpace int
+
+	if availableWorkSpace = 0; totalWorkSpace != nil {
+		availableWorkSpace = floor.TotalWorkSpace - *totalWorkSpace
+	} else {
+		availableWorkSpace = floor.TotalWorkSpace
+	}
+
 	if err := c.JSON(&fiber.Map{
 		"success":             true,
 		"available_workspace": availableWorkSpace,

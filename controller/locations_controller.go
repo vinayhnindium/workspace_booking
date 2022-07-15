@@ -14,7 +14,7 @@ func AllLocations(c *fiber.Ctx) error {
 	if err := c.JSON(&fiber.Map{
 		"success":   true,
 		"locations": locations,
-		"message":   "All Locations returned successfully",
+		"message":   "All locations returned successfully",
 	}); err != nil {
 		return utility.ErrResponse(c, "Error in getting locations", 500, err)
 	}

@@ -46,9 +46,15 @@ func (floor *Floor) CreateFloor() error {
 	dt := time.Now()
 	query := "INSERT INTO floors (name, total_workspace, building_id, created_at, updated_at) VALUES ($1, $2, $3, $4, $5) RETURNING id, created_at, updated_at"
 	location := migration.DbPool.QueryRow(context.Background(), "select name from buildings where id = $1", &floor.BuildingId)
-	location.Scan(&floor.BuildingName)
+	err := location.Scan(&floor.BuildingName)
+	if err != nil {
+		return err
+	}
 	d := migration.DbPool.QueryRow(context.Background(), query, &floor.Name, &floor.TotalWorkSpace, &floor.BuildingId, dt, dt)
-	d.Scan(&floor.Id, &floor.CreatedAt, &floor.UpdatedAt)
+	err = d.Scan(&floor.Id, &floor.CreatedAt, &floor.UpdatedAt)
+	if err != nil {
+		return err
+	}
 	return nil
 }
 

@@ -55,7 +55,10 @@ func (city *City) CreateCity() error {
 	dt := time.Now()
 	query := "INSERT INTO cities (name, created_at, updated_at) VALUES ($1, $2, $3) RETURNING id, created_at, updated_at"
 	d := migration.DbPool.QueryRow(context.Background(), query, &city.Name, dt, dt)
-	d.Scan(&city.Id, &city.CreatedAt, &city.UpdatedAt)
+	err := d.Scan(&city.Id, &city.CreatedAt, &city.UpdatedAt)
+	if err != nil {
+		return err
+	}
 	return nil
 }
 

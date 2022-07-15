@@ -55,17 +55,17 @@ func GetBookingParticipantsDetailsByBookingId(bookingId int16) []*BookingPartici
 
 	defer participants.Close()
 	// declare BookingParticipantDetail array variable
-	booking_participants_details := make([]*BookingParticipantDetail, 0)
+	bookingParticipantsDetails := make([]*BookingParticipantDetail, 0)
 
 	// iterate over booking_participants
 	for participants.Next() {
 		participant := new(BookingParticipantDetail)
 		e = participants.Scan(&participant.Id, &participant.UserName, &participant.UserEmail)
-		booking_participants_details = append(booking_participants_details, participant)
+		bookingParticipantsDetails = append(bookingParticipantsDetails, participant)
 	}
 	if e != nil {
 		fmt.Println("Failed to get bookings_details record :", e)
 		return []*BookingParticipantDetail{}
 	}
-	return booking_participants_details
+	return bookingParticipantsDetails
 }

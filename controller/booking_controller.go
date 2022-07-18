@@ -2,13 +2,11 @@ package controller
 
 import (
 	"context"
-	"fmt"
 	"strconv"
+	"workspace_booking/config"
 	"workspace_booking/migration"
 	"workspace_booking/model"
 	"workspace_booking/utility"
-
-	"github.com/golang-jwt/jwt/v4"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -100,13 +98,14 @@ func WorkSpacesDetails(c *fiber.Ctx) error {
 }
 
 func MyBookingDetails(c *fiber.Ctx) error {
-	user := c.Locals("user").(*jwt.Token)
-	claims := user.Claims.(jwt.MapClaims)
+	auth, err := config.GetAuthDetails(c)
+	if err != nil {
+		return utility.ErrResponse(c, "Error in getting buildings", 500, err)
+	}
 
 	var userId int
 
-	currentUserId := fmt.Sprintf("%v", claims["id"])
-	userId, _ = strconv.Atoi(currentUserId)
+	userId, _ = strconv.Atoi(auth.UserID)
 
 	workspaceDetails := model.GetMyBookingDetails(true, userId)
 	pastBookingDetails := model.GetMyBookingDetails(false, userId)

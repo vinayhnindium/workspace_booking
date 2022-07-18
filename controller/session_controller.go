@@ -2,6 +2,7 @@ package controller
 
 import (
 	"log"
+	"strconv"
 	"strings"
 	"time"
 
@@ -94,9 +95,11 @@ func Login(c *fiber.Ctx) error {
 		return utility.ErrResponse(c, "Incorrect Password", 400, err)
 	}
 
+	uID := strconv.Itoa(u.ID)
+
 	// Create the Claims
 	claims := jwt.MapClaims{
-		"id":    u.ID,
+		"id":    uID,
 		"name":  u.Name,
 		"email": u.Email,
 		"exp":   time.Now().Add(time.Hour * 72).Unix(),

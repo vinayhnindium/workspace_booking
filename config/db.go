@@ -43,10 +43,11 @@ func GetDBPassword() string {
 
 func GetDBConnectionURL() string {
 	return fmt.Sprintf(
-		"host=%s port=%s user=%s dbname=%s sslmode=disable",
+		"host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
 		GetDBHost(),
 		GetDBPort(),
 		GetDBUser(),
+		GetDBPassword(),
 		GetDBName(),
 	)
 }

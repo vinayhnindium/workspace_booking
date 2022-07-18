@@ -2,6 +2,7 @@ package controller
 
 import (
 	"context"
+	"fmt"
 	"strconv"
 	"workspace_booking/config"
 	"workspace_booking/migration"
@@ -42,26 +43,32 @@ func CreateBooking(c *fiber.Ctx) error {
 
 func GetAvailableBookingSpace(c *fiber.Ctx) error {
 
-	type params struct {
-		FloorId  int    `json:"floor_id"`
-		FromDate string `json:"from_date"`
-		ToDate   string `json:"to_date"`
-	}
+	// type params struct {
+	// 	FloorId  int    `json:"floor_id"`
+	// 	FromDate string `json:"from_date"`
+	// 	ToDate   string `json:"to_date"`
+	// }
 
-	workspaceParams := new(params)
-
-	if err := c.BodyParser(workspaceParams); err != nil {
-		return utility.ErrResponse(c, "Error in body parsing", 400, err)
-	}
+	// workspaceParams := new(params)
+	reqFloorId := c.Query("floor_id")
+	fromDate := c.Query("from_date")
+	toDate := c.Query("to_date")
+	floorId, _ := strconv.Atoi(reqFloorId)
+	fmt.Printf(reqFloorId)
+	fmt.Printf(fromDate)
+	fmt.Printf(toDate)
+	// if err := c.BodyParser(workspaceParams); err != nil {
+	// 	return utility.ErrResponse(c, "Error in body parsing", 400, err)
+	// }
 
 	var totalWorkSpace *int
 
 	// DB query call.
 	rows := migration.DbPool.QueryRow(context.Background(),
-		"select SUM(workspaces_booked) as total_workspace from bookings where floor_id = $1 and from_date >= $2 and to_date <= $3", workspaceParams.FloorId, workspaceParams.FromDate, workspaceParams.ToDate)
+		"select SUM(workspaces_booked) as total_workspace from bookings where floor_id = $1 and from_date >= $2 and to_date <= $3", floorId, fromDate, toDate)
 
 	// getting total number of booking space
-	floor := model.GetFloorByID(workspaceParams.FloorId)
+	floor := model.GetFloorByID(floorId)
 
 	err := rows.Scan(&totalWorkSpace)
 	if err != nil {

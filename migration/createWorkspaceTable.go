@@ -6,14 +6,15 @@ import (
 )
 
 // CreateRoleTable ...
-func CreateFloorTable() {
+func CreateWorkspaceTable() {
 
-	r, err := DbPool.Exec(context.Background(), `CREATE TABLE IF NOT EXISTS floors (
+	r, err := DbPool.Exec(context.Background(), `CREATE TABLE IF NOT EXISTS workspaces (
 		id serial PRIMARY KEY,
 		name VARCHAR ( 50 ) NOT NULL,
-		total_workspace INTEGER NOT NULL,
-		total_conference INTEGER NOT NULL,
-		building_id INTEGER REFERENCES buildings (id),
+		floor_id INTEGER REFERENCES floors (id),
+		type VARCHAR ( 50 ) NOT NULL,
+		active boolean NOT NULL DEFAULT TRUE,
+		capacity INT NOT NULL DEFAULT 1,
 		created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 		updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP)
 	`)

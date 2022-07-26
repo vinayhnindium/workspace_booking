@@ -28,11 +28,13 @@ func CreateFloor(c *fiber.Ctx) error {
 	if err := c.BodyParser(floor); err != nil {
 		return utility.ErrResponse(c, "Error in creating floor", 400, err)
 	}
-
 	err := floor.CreateFloor()
 	if err != nil {
 		return utility.ErrResponse(c, "Error in creating floor", 500, err)
 	}
+
+	floorWorkspaceRecords := model.BulkFloorWorkspacesCreate(floor.Id, floor.FloorWorkSpaces)
+	floor.FloorWorkSpaces = floorWorkspaceRecords
 
 	// Return Floor in JSON format
 	if err := c.JSON(&fiber.Map{

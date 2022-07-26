@@ -2,7 +2,6 @@ package controller
 
 import (
 	"context"
-	"fmt"
 	"strconv"
 	"workspace_booking/config"
 	"workspace_booking/migration"
@@ -42,24 +41,10 @@ func CreateBooking(c *fiber.Ctx) error {
 }
 
 func GetAvailableBookingSpace(c *fiber.Ctx) error {
-
-	// type params struct {
-	// 	FloorId  int    `json:"floor_id"`
-	// 	FromDate string `json:"from_date"`
-	// 	ToDate   string `json:"to_date"`
-	// }
-
-	// workspaceParams := new(params)
 	reqFloorId := c.Query("floor_id")
 	fromDate := c.Query("from_date")
 	toDate := c.Query("to_date")
 	floorId, _ := strconv.Atoi(reqFloorId)
-	fmt.Printf(reqFloorId)
-	fmt.Printf(fromDate)
-	fmt.Printf(toDate)
-	// if err := c.BodyParser(workspaceParams); err != nil {
-	// 	return utility.ErrResponse(c, "Error in body parsing", 400, err)
-	// }
 
 	var totalWorkSpace *int
 

@@ -24,7 +24,9 @@ func CreateBooking(c *fiber.Ctx) error {
 		return utility.ErrResponse(c, "Error in creation", 500, err)
 	}
 
-	err = model.BulkInsertBookingParticipant(workspaceParams.Id, workspaceParams.UserIds)
+	err = model.BulkInsertBookingParticipant(workspaceParams, workspaceParams.UserIds)
+
+	err = model.BulkInsertBookingWorkspace(workspaceParams, workspaceParams.WorkspaceIds)
 
 	if err != nil {
 		return utility.ErrResponse(c, "Error in creating participants", 500, err)
@@ -42,15 +44,15 @@ func CreateBooking(c *fiber.Ctx) error {
 
 func GetAvailableBookingSpace(c *fiber.Ctx) error {
 	reqFloorId := c.Query("floor_id")
-	fromDate := c.Query("from_date")
-	toDate := c.Query("to_date")
+	fromDate := c.Query("from_datetime")
+	toDate := c.Query("to_datetime")
 	floorId, _ := strconv.Atoi(reqFloorId)
 
 	var totalWorkSpace *int
 
 	// DB query call.
 	rows := migration.DbPool.QueryRow(context.Background(),
-		"select SUM(workspaces_booked) as total_workspace from bookings where floor_id = $1 and from_date >= $2 and to_date <= $3", floorId, fromDate, toDate)
+		"select SUM(workspaces_booked) as total_workspace from bookings where floor_id = $1 and from_datetime >= $2 and to_datetime <= $3", floorId, fromDate, toDate)
 
 	// getting total number of booking space
 	floor := model.GetFloorByID(floorId)

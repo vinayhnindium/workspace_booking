@@ -9,9 +9,8 @@ import (
 func CreateBookingsTable() {
 
 	r, err := DbPool.Exec(context.Background(), `CREATE TABLE IF NOT EXISTS bookings (
-        id serial PRIMARY KEY,
+    id serial PRIMARY KEY,
 		city_id int,
-		location_id int,
 		building_id int,
 		floor_id int,
 		user_id int,
@@ -21,7 +20,7 @@ func CreateBookingsTable() {
 		workspaces_booked int,
         created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP)
-`)
+	`)
 	if err != nil {
 		fmt.Println(err)
 	} else {

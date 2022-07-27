@@ -9,11 +9,14 @@ import (
 
 // BookingParticipant struct
 type BookingParticipant struct {
-	Id        int16     `json:"id"`
-	BookingId int16     `json:"booking_id"`
-	UserId    int16     `json:"user_id"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
+	Id           int16     `json:"id"`
+	BookingId    int16     `json:"booking_id"`
+	UserId       int16     `json:"user_id"`
+	FloorId      int16     `json:"floor_id"`
+	FromDateTime string    `json:"from_datetime"`
+	ToDateTime   string    `json:"to_datetime"`
+	CreatedAt    time.Time `json:"created_at"`
+	UpdatedAt    time.Time `json:"updated_at"`
 }
 type BookingParticipantDetail struct {
 	Id        int16  `json:"id"`
@@ -26,9 +29,9 @@ type BookingParticipantDetails struct {
 
 func (bp *BookingParticipant) CreateBookingParticipant() error {
 	dt := time.Now()
-	query := "INSERT INTO booking_participants (booking_id, user_id, created_at, updated_at) VALUES ($1, $2, $3, $4) " +
+	query := "INSERT INTO booking_participants (booking_id, user_id, created_at, updated_at, floor_id, from_datetime, to_datetime) VALUES ($1, $2, $3, $4, $5, $6, $7) " +
 		"RETURNING id, created_at, updated_at"
-	d := migration.DbPool.QueryRow(context.Background(), query, &bp.BookingId, &bp.UserId, dt, dt)
+	d := migration.DbPool.QueryRow(context.Background(), query, &bp.BookingId, &bp.UserId, dt, dt, &bp.FloorId, &bp.FromDateTime, &bp.ToDateTime)
 	err := d.Scan(&bp.Id, &bp.CreatedAt, &bp.UpdatedAt)
 	if err != nil {
 		return err
@@ -36,10 +39,13 @@ func (bp *BookingParticipant) CreateBookingParticipant() error {
 	return nil
 }
 
-func BulkInsertBookingParticipant(bookingId int16, userIds []int16) error {
+func BulkInsertBookingParticipant(booking *Booking, userIds []int16) error {
 	for _, userId := range userIds {
 		bookingParticipant := new(BookingParticipant)
-		bookingParticipant.BookingId = bookingId
+		bookingParticipant.BookingId = booking.Id
+		bookingParticipant.FloorId = booking.FloorId
+		bookingParticipant.FromDateTime = booking.FromDateTime
+		bookingParticipant.ToDateTime = booking.ToDateTime
 		bookingParticipant.UserId = userId
 		err := bookingParticipant.CreateBookingParticipant()
 		if err != nil {

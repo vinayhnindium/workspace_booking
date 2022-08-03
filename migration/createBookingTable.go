@@ -17,7 +17,6 @@ func CreateBookingsTable() {
 		from_datetime TIMESTAMP NOT NULL,
 		to_datetime TIMESTAMP NOT NULL,
 		purpose VARCHAR ( 255 ),
-		workspaces_booked int,
         created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP)
 	`)

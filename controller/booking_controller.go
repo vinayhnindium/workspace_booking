@@ -13,20 +13,30 @@ import (
 
 // CreateBooking handler
 func CreateBooking(c *fiber.Ctx) error {
+	timingParams := new(model.BookingTiming)
+
+	c.BodyParser(timingParams)
+
+	fromDatetTime, toDateTime := model.BookingTimestamp(timingParams)
+
 	workspaceParams := new(model.Booking)
 
 	if err := c.BodyParser(workspaceParams); err != nil {
 		return utility.ErrResponse(c, "Error in body parsing", 400, err)
 	}
+
+	workspaceParams.FromDateTime = fromDatetTime
+	workspaceParams.ToDateTime = toDateTime
+
 	err := workspaceParams.InsertBooking()
 
 	if err != nil {
 		return utility.ErrResponse(c, "Error in creation", 500, err)
 	}
 
-	err = model.BulkInsertBookingParticipant(workspaceParams, workspaceParams.UserIds)
+	err = model.BulkInsertBookingParticipant(workspaceParams)
 
-	err = model.BulkInsertBookingWorkspace(workspaceParams, workspaceParams.WorkspaceIds)
+	err = model.BulkInsertBookingWorkspace(workspaceParams, timingParams)
 
 	if err != nil {
 		return utility.ErrResponse(c, "Error in creating participants", 500, err)
@@ -34,7 +44,6 @@ func CreateBooking(c *fiber.Ctx) error {
 
 	if err := c.JSON(&fiber.Map{
 		"success": true,
-		"role":    workspaceParams,
 		"message": "Booking successfully created",
 	}); err != nil {
 		return utility.ErrResponse(c, "Error in response", 500, err)

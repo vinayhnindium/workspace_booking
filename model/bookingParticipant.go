@@ -39,8 +39,8 @@ func (bp *BookingParticipant) CreateBookingParticipant() error {
 	return nil
 }
 
-func BulkInsertBookingParticipant(booking *Booking, userIds []int16) error {
-	for _, userId := range userIds {
+func BulkInsertBookingParticipant(booking *Booking) error {
+	for _, userId := range booking.UserIds {
 		bookingParticipant := new(BookingParticipant)
 		bookingParticipant.BookingId = booking.Id
 		bookingParticipant.FloorId = booking.FloorId

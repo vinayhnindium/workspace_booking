@@ -41,17 +41,22 @@ func (bw *BookingWorkspace) CreateBookingWorkspace() error {
 	return nil
 }
 
-func BulkInsertBookingWorkspace(booking *Booking, WorkspaceIds []int16) error {
-	for _, WorkspaceId := range WorkspaceIds {
-		bookingWorkspace := new(BookingWorkspace)
-		bookingWorkspace.BookingId = booking.Id
-		bookingWorkspace.FloorId = booking.FloorId
-		bookingWorkspace.FromDateTime = booking.FromDateTime
-		bookingWorkspace.ToDateTime = booking.ToDateTime
-		bookingWorkspace.WorkspaceId = WorkspaceId
-		err := bookingWorkspace.CreateBookingWorkspace()
-		if err != nil {
-			return err
+func BulkInsertBookingWorkspace(booking *Booking, timing *BookingTiming) error {
+	for _, selectWorkspace := range booking.SelectedWorkspaces {
+		timing.FromDate = selectWorkspace.Date
+		timing.ToDate = selectWorkspace.Date
+		fromDatetTime, toDateTime := BookingTimestamp(timing)
+		for _, seatId := range selectWorkspace.Seats {
+			bookingWorkspace := new(BookingWorkspace)
+			bookingWorkspace.BookingId = booking.Id
+			bookingWorkspace.FloorId = booking.FloorId
+			bookingWorkspace.FromDateTime = fromDatetTime
+			bookingWorkspace.ToDateTime = toDateTime
+			bookingWorkspace.WorkspaceId = seatId
+			err := bookingWorkspace.CreateBookingWorkspace()
+			if err != nil {
+				return err
+			}
 		}
 	}
 	return nil

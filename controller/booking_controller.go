@@ -1,10 +1,8 @@
 package controller
 
 import (
-	"context"
 	"strconv"
 	"workspace_booking/config"
-	"workspace_booking/migration"
 	"workspace_booking/model"
 	"workspace_booking/utility"
 
@@ -53,36 +51,29 @@ func CreateBooking(c *fiber.Ctx) error {
 
 func GetAvailableBookingSpace(c *fiber.Ctx) error {
 	reqFloorId := c.Query("floor_id")
-	fromDate := c.Query("from_datetime")
-	toDate := c.Query("to_datetime")
-	floorId, _ := strconv.Atoi(reqFloorId)
-
-	var totalWorkSpace *int
-
-	// DB query call.
-	rows := migration.DbPool.QueryRow(context.Background(),
-		"select SUM(workspaces_booked) as total_workspace from bookings where floor_id = $1 and from_datetime >= $2 and to_datetime <= $3", floorId, fromDate, toDate)
-
-	// getting total number of booking space
-	floor := model.GetFloorByID(floorId)
-
-	err := rows.Scan(&totalWorkSpace)
+	fromDate := c.Query("from_date")
+	toDate := c.Query("to_date")
+	startTime := c.Query("start_time")
+	endTime := c.Query("end_time")
+	floorId, err := strconv.Atoi(reqFloorId)
 	if err != nil {
-		return err
+		return utility.ErrResponse(c, "Error in string convertion", 500, err)
 	}
-	var availableWorkSpace int
+	timingParams := new(model.BookingTiming)
+	timingParams.FromDate = fromDate
+	timingParams.ToDate = toDate
+	timingParams.StartTime = startTime
+	timingParams.EndTime = endTime
 
-	if availableWorkSpace = 0; totalWorkSpace != nil {
-		availableWorkSpace = floor.TotalWorkSpace - *totalWorkSpace
-	} else {
-		availableWorkSpace = floor.TotalWorkSpace
-	}
+	fromDatetTime, toDateTime := model.BookingTimestamp(timingParams)
 
+	// getting booking worksapcesspace
+	availableWorkSpace, err := model.GetAvailableBookingSpace(floorId, fromDatetTime, toDateTime)
 	if err := c.JSON(&fiber.Map{
-		"success":             true,
-		"available_workspace": availableWorkSpace,
+		"success": true,
+		"data":    availableWorkSpace,
 	}); err != nil {
-		return utility.ErrResponse(c, "Error in getting buildings", 500, err)
+		return utility.ErrResponse(c, "Error in getting available booking", 500, err)
 	}
 	return nil
 }

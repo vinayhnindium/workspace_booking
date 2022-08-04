@@ -57,6 +57,16 @@ type Bookings struct {
 	Bookings []*Booking
 }
 
+type AvailableWorkspaces struct {
+	FloorDetails     Floor
+	BookedWorkSpaces []*BookedWorkSpace
+}
+
+type BookedWorkSpace struct {
+	BookedDate   time.Time `json:"date"`
+	WorkspaceIds []int     `json:"seats"`
+}
+
 // InsertBooking will create the booking record in db
 func (b *Booking) InsertBooking() error {
 
@@ -116,4 +126,27 @@ func BookingTimestamp(t *BookingTiming) (string, string) {
 	fromDateTime := ConvertDateTime(t.FromDate, t.StartTime)
 	toDateTime := ConvertDateTime(t.ToDate, t.EndTime)
 	return fromDateTime, toDateTime
+}
+
+func GetAvailableBookingSpace(floorId int, fromDate, toDate string) (availableWorkSpaceDetails AvailableWorkspaces, err error) {
+	floor := GetFloorByID(floorId)
+
+	bookedWorkSpacesRecord := make([]*BookedWorkSpace, 0)
+
+	rows, err := migration.DbPool.Query(context.Background(), "SELECT from_datetime as date, array_agg(workspace_id) as seats from booking_workspaces where floor_id = $1 and from_datetime between $2 and $3 and to_datetime between $4 and $5 group by from_datetime", floorId, fromDate, toDate, fromDate, toDate)
+
+	defer rows.Close()
+
+	if err != nil {
+		fmt.Println("Failed to get available booking:", err)
+		return AvailableWorkspaces{}, err
+	}
+
+	for rows.Next() {
+		bookingRecord := new(BookedWorkSpace)
+		rows.Scan(&bookingRecord.BookedDate, &bookingRecord.WorkspaceIds)
+		bookedWorkSpacesRecord = append(bookedWorkSpacesRecord, bookingRecord)
+	}
+	availableWorkspaces := AvailableWorkspaces{FloorDetails: floor, BookedWorkSpaces: bookedWorkSpacesRecord}
+	return availableWorkspaces, nil
 }

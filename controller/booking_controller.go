@@ -132,3 +132,36 @@ func MyBookingDetails(c *fiber.Ctx) error {
 	}
 	return nil
 }
+
+// ------------------------------------------------------------------------------------------------------------------
+
+func EditBooking(c *fiber.Ctx) error {
+
+	id := c.Params("id")
+	i, e := strconv.Atoi(id)
+
+	if e != nil {
+		return c.Status(400).SendString(e.Error())
+	}
+
+	u := &model.Booking{Id: int16(i)}
+
+	if err := c.BodyParser(u); err != nil {
+		return utility.ErrResponse(c, "Error in parsing", 400, err)
+	}
+	err := u.UpdateBooking()
+
+	if err != nil {
+		return utility.ErrResponse(c, "Error in updating user", 400, err)
+	}
+
+	if u.Id != 0 {
+		go mailer.BookingMailer(u.Id, false)
+	}
+
+	return c.JSON(fiber.Map{
+		"message": "Booking Successfully Updated",
+		"booking": u,
+	})
+
+}

@@ -140,7 +140,7 @@ func GetAvailableBookingSpace(floorId int, fromDate, toDate string) (availableWo
 
 	bookedWorkSpacesRecord := make([]*BookedWorkSpace, 0)
 
-	rows, err := migration.DbPool.Query(context.Background(), "SELECT from_datetime as date, array_agg(workspace_id) as seats from booking_workspaces where floor_id = $1 and from_datetime between $2 and $3 and to_datetime between $4 and $5 group by from_datetime", floorId, fromDate, toDate, fromDate, toDate)
+	rows, err := migration.DbPool.Query(context.Background(), "SELECT from_datetime as date, array_agg(workspace_id) as seats from booking_workspaces where (floor_id = $1 and from_datetime <= $2 and to_datetime >= $3) or (floor_id = $1 and from_datetime <= $2 and to_datetime between $2 and $3) or (floor_id = $1 and from_datetime between $2 and $3 and to_datetime <= $3) or (floor_id = $1 and from_datetime >= $2 and to_datetime between $2 and $3) or (floor_id = $1 and from_datetime between $2 and $3 and to_datetime >= $3) group by from_datetime", floorId, fromDate, toDate)
 
 	defer rows.Close()
 
@@ -192,4 +192,14 @@ func GetBookingForReminder() []int16 {
 	}
 	fmt.Println(BookingIds)
 	return BookingIds
+}
+
+//------------------------------------------------------------------------------------------------------------
+
+func (b *Booking) UpdateBooking() error {
+	dt := time.Now()
+
+	_, err := migration.DbPool.Exec(context.Background(), "UPDATE bookings SET city_Id=$1 , building_Id=$2 , floor_Id=$3 ,from_datetime=$4 ,to_datetime=$5 ,purpose=$6 , updated_at=$7 WHERE Id=$8;", b.CityId, b.BuildingId, b.FloorId, b.FromDateTime, b.ToDateTime, b.Purpose, dt, b.Id)
+
+	return err
 }
